@@ -93,3 +93,4 @@ clearCompletedButton.addEventListener('click', () => {
         if (checkbox.checked) { deleteTask(todoItem); }
     });
 });
+    
