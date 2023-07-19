@@ -74,6 +74,7 @@ body {
 }
 
 .clear-completed button {
+  width: 100%;
   padding: 10px 20px;
   background-color: #953d79;
   border: none;
