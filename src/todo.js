@@ -1,24 +1,21 @@
-const todoList = document.getElementById('todo-list');
-let tasks = loadTasksFromLocalStorage();
+let tasks = [{
+        description: 'Task 1',
+        completed: false,
+        index: 1,
+    },
+    {
+        description: 'Task 2',
+        completed: true,
+        index: 2,
+    },
+    // Add more tasks with different index values
+];
 
-function saveTasksToLocalStorage() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+export function deleteTask(todoItem) {
+    todoItem.remove();
 }
 
-function loadTasksFromLocalStorage() {
-    const storedTasks = localStorage.getItem('tasks');
-    return storedTasks ? JSON.parse(storedTasks) : [];
-}
-
-function deleteTask(todoItem) {
-    const index = parseInt(todoItem.dataset.index);
-    tasks.splice(index, 1);
-    updateIndexes();
-    saveTasksToLocalStorage();
-    renderTodoList();
-}
-
-function editTask(todoItem) {
+export function editTask(todoItem) {
     const taskElement = todoItem.querySelector('.task');
     const taskText = taskElement.textContent;
     taskElement.innerHTML = '';
@@ -36,25 +33,21 @@ function editTask(todoItem) {
                 todoItem.style.backgroundColor = '';
                 todoItem.querySelector('.more-btn').style.display = 'inline-block';
                 todoItem.querySelector('.delete-btn').style.display = 'none';
-                const index = parseInt(todoItem.dataset.index);
-                tasks[index].description = newText;
-                saveTasksToLocalStorage();
             }
         }
     });
 }
 
-function toggleDeleteButton(todoItem) {
+export function toggleDeleteButton(todoItem) {
     const moreButton = todoItem.querySelector('.more-btn');
     const deleteButton = todoItem.querySelector('.delete-btn');
     moreButton.style.display = 'none';
     deleteButton.style.display = 'inline-block';
 }
 
-function createTodoItem(task, index) {
+export function createTodoItem(task) {
     const todoItem = document.createElement('li');
     todoItem.classList.add('todo-item');
-    todoItem.dataset.index = index;
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.classList.add('task-checkbox');
@@ -84,6 +77,8 @@ function createTodoItem(task, index) {
     deleteButton.addEventListener('click', (event) => {
         event.stopPropagation();
         deleteTask(todoItem);
+        updateIndexes(); // Update task indexes after deleting a task
+        saveTasksToLocalStorage(); // Save updated tasks to local storage
     });
     checkbox.addEventListener('change', () => {
         task.completed = checkbox.checked;
@@ -92,36 +87,55 @@ function createTodoItem(task, index) {
         } else {
             taskElement.classList.remove('completed');
         }
-        saveTasksToLocalStorage();
+        saveTasksToLocalStorage(); // Save updated tasks to local storage
     });
     return todoItem;
 }
 
-function renderTodoList() {
+export function renderTodoList() {
+    const todoList = document.getElementById('todo-list');
     todoList.innerHTML = '';
 
-    tasks.forEach((task, index) => {
-        const todoItem = createTodoItem(task, index);
+    // Sort tasks by index value before rendering
+    tasks.sort((a, b) => a.index - b.index);
 
+    tasks.forEach((task) => {
+        const todoItem = createTodoItem(task);
         todoList.appendChild(todoItem);
     });
 }
 
-function addTodoItem(taskText) {
+export function addTodoItem(taskText) {
     const newTask = {
         description: taskText,
         completed: false,
+        index: tasks.length + 1,
     };
     tasks.push(newTask);
-    saveTasksToLocalStorage();
     renderTodoList();
+    saveTasksToLocalStorage(); // Save updated tasks to local storage
+}
+
+export function clearCompletedTasks() {
+    tasks = tasks.filter((task) => !task.completed);
+    updateIndexes(); // Update task indexes after clearing completed tasks
+    renderTodoList();
+    saveTasksToLocalStorage(); // Save updated tasks to local storage
 }
 
 function updateIndexes() {
     tasks.forEach((task, index) => {
         task.index = index + 1;
     });
-    saveTasksToLocalStorage();
 }
 
-export { addTodoItem, deleteTask, editTask, renderTodoList, tasks };
+export function saveTasksToLocalStorage() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+export function loadTasksFromLocalStorage() {
+    const savedTasks = localStorage.getItem('tasks');
+    if (savedTasks) {
+        tasks = JSON.parse(savedTasks);
+    }
+}
