@@ -5,7 +5,8 @@ const addTaskButton = document.getElementById('add-task-btn');
 const newTaskInput = document.getElementById('new-task-input');
 const clearCompletedButton = document.getElementById('clear-completed-btn');
 
-// Function to add a new task when the "Add Task" button is clicked
+todo.loadTasksFromLocalStorage();
+
 addTaskButton.addEventListener('click', (event) => {
     event.preventDefault();
     const taskText = newTaskInput.value.trim();
@@ -15,11 +16,18 @@ addTaskButton.addEventListener('click', (event) => {
     }
 });
 
-// Function to clear all completed tasks when the "Clear Completed" button is clicked
 clearCompletedButton.addEventListener('click', () => {
     todo.clearCompletedTasks();
 });
 
-// Load tasks from local storage and then render the todo list
-todo.loadTasksFromLocalStorage();
+const todoList = document.getElementById('todo-list');
+
+todoList.addEventListener('click', (event) => {
+    const target = event.target;
+    if (target.classList.contains('delete-btn')) {
+        const todoItem = target.parentElement;
+        todo.deleteTask(todoItem);
+    }
+});
+
 todo.renderTodoList();
