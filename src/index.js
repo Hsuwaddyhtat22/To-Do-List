@@ -7,17 +7,17 @@ const clearCompletedButton = document.getElementById('clear-completed-btn');
 
 // Add a new task
 addTaskButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    const taskText = newTaskInput.value.trim();
-    if (taskText !== '') {
-        todo.addTodoItem(taskText);
-        newTaskInput.value = '';
-    }
+  event.preventDefault();
+  const taskText = newTaskInput.value.trim();
+  if (taskText !== '') {
+    todo.addTodoItem(taskText);
+    newTaskInput.value = '';
+  }
 });
 
 // Clear all completed tasks
 clearCompletedButton.addEventListener('click', () => {
-    todo.clearCompletedTasks();
+  todo.clearCompletedTasks();
 });
 
 // Initial rendering of tasks
