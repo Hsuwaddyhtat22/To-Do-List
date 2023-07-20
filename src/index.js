@@ -1,3 +1,5 @@
+import './style.css';
+
 const tasks = [{
         description: 'Task 1',
         completed: false,
@@ -8,7 +10,7 @@ const tasks = [{
         completed: true,
         index: 2,
     },
-    // Add more tasks here with different index values
+    // Add more tasks with different index values
 ];
 
 const addTaskButton = document.getElementById('add-task-btn');
