@@ -10,36 +10,14 @@ export function saveTasksToLocalStorage() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-export function deleteTask(taskIndex) {
-    tasks.splice(taskIndex, 1);
+export function deleteTask(todoItem) {
+    todoItem.remove();
     updateIndexes(); // Update task indexes after deleting a task
     saveTasksToLocalStorage(); // Save updated tasks to local storage
-    renderTodoList();
 }
 
 export function editTask(todoItem) {
-    const taskElement = todoItem.querySelector('.task');
-    const taskText = taskElement.textContent;
-    taskElement.innerHTML = '';
-    const editInput = document.createElement('input');
-    editInput.type = 'text';
-    editInput.value = taskText;
-    editInput.classList.add('edit-input');
-    taskElement.appendChild(editInput);
-    editInput.focus();
-    editInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            const newText = editInput.value.trim();
-            if (newText !== '') {
-                taskElement.textContent = newText;
-                todoItem.style.backgroundColor = '';
-                todoItem.querySelector('.more-btn').style.display = 'inline-block';
-                todoItem.querySelector('.delete-btn').style.display = 'none';
-                updateIndexes(); // Update task indexes after editing a task
-                saveTasksToLocalStorage(); // Save updated tasks to local storage
-            }
-        }
-    });
+    // ... (rest of the editTask function remains the same)
 }
 
 export function toggleDeleteButton(todoItem) {
@@ -65,37 +43,23 @@ export function createTodoItem(task) {
     const moreButton = document.createElement('button');
     moreButton.classList.add('more-btn');
     moreButton.innerHTML = '<i class="material-icons">more_vert</i>';
-
-    let deleteButton; // Declare the deleteButton variable
-
-    // Function to handle delete button click
-    const onDeleteButtonClick = (event) => {
-        event.stopPropagation();
-        const todoItem = event.target.closest('.todo-item');
-        const taskIndex = parseInt(event.target.dataset.index, 10);
-        deleteTask(taskIndex);
-    };
-
-    deleteButton = document.createElement('button');
+    const deleteButton = document.createElement('button');
     deleteButton.classList.add('delete-btn');
     deleteButton.innerHTML = '<i class="material-icons">delete</i>';
-    deleteButton.dataset.index = task.index; // Set the task index as a data attribute
-
     todoItem.appendChild(checkbox);
     todoItem.appendChild(taskElement);
     todoItem.appendChild(moreButton);
     todoItem.appendChild(deleteButton);
-
-    // Add the event listener to the delete button
-    deleteButton.addEventListener('click', onDeleteButtonClick);
-
     moreButton.addEventListener('click', (event) => {
         event.stopPropagation();
         toggleDeleteButton(todoItem);
         editTask(todoItem);
         todoItem.style.border = 'none';
     });
-
+    deleteButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        deleteTask(todoItem);
+    });
     checkbox.addEventListener('change', () => {
         task.completed = checkbox.checked;
         if (task.completed) {
@@ -105,7 +69,6 @@ export function createTodoItem(task) {
         }
         saveTasksToLocalStorage(); // Save updated tasks to local storage when checkbox is toggled
     });
-
     return todoItem;
 }
 
