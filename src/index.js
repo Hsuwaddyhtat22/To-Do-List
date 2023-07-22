@@ -1,11 +1,14 @@
+// main.js
+
 import './style.css';
 import * as todo from './todo';
+import { loadItemsFromLocalStorage } from './status';
 
 const addTaskButton = document.getElementById('add-task-btn');
 const newTaskInput = document.getElementById('new-task-input');
 const clearCompletedButton = document.getElementById('clear-completed-btn');
 
-todo.loadTasksFromLocalStorage();
+loadItemsFromLocalStorage();
 
 addTaskButton.addEventListener('click', (event) => {
   event.preventDefault();

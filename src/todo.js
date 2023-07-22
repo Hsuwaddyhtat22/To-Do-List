@@ -1,39 +1,22 @@
-// Array to store the tasks
-let tasks = [];
+import { items, updateStatus, saveItemsToLocalStorage } from './status';
 
-// Function to update task indexes
 function updateIndexes() {
-  tasks.forEach((task, index) => {
+  items.forEach((task, index) => {
     task.index = index + 1;
   });
 }
 
-// Function to save tasks to local storage
-export function saveTasksToLocalStorage() {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-}
-
-// Function to load tasks from local storage
-export function loadTasksFromLocalStorage() {
-  const savedTasks = localStorage.getItem('tasks');
-  if (savedTasks) {
-    tasks = JSON.parse(savedTasks);
-  }
-}
-
-// Function to delete a task
 export function deleteTask(todoItem) {
   /* eslint-disable */
-  const taskIndex = tasks.findIndex((task) => task.index === parseInt(todoItem.dataset.index));
+  const taskIndex = items.findIndex((task) => task.index === parseInt(todoItem.dataset.index));
   if (taskIndex !== -1) {
-    tasks.splice(taskIndex, 1);
-    updateIndexes(); // Update task indexes after deleting a task
-    /* eslint-disable */
-    saveTasksToLocalStorage(); // Save updated tasks to local storage
-    renderTodoList(); // Render the updated todo list
+    items.splice(taskIndex, 1);
+    updateIndexes();
+    saveItemsToLocalStorage();
+    renderTodoList();
   }
 }
-// Function to edit a task
+
 export function editTask(todoItem) {
   const taskElement = todoItem.querySelector('.task');
   const taskText = taskElement.textContent;
@@ -52,14 +35,18 @@ export function editTask(todoItem) {
         todoItem.style.backgroundColor = '';
         todoItem.querySelector('.more-btn').style.display = 'inline-block';
         todoItem.querySelector('.delete-btn').style.display = 'none';
-        updateIndexes(); // Update task indexes after editing a task
-        saveTasksToLocalStorage(); // Save updated tasks to local storage
+
+        const index = parseInt(todoItem.getAttribute('data-index'));
+        const task = items.find((item) => item.index === index);
+        if (task) {
+          task.description = newText;
+          saveItemsToLocalStorage();
+        }
       }
     }
   });
 }
 
-// Function to toggle the delete button visibility
 export function toggleDeleteButton(todoItem) {
   const moreButton = todoItem.querySelector('.more-btn');
   const deleteButton = todoItem.querySelector('.delete-btn');
@@ -67,7 +54,6 @@ export function toggleDeleteButton(todoItem) {
   deleteButton.style.display = 'inline-block';
 }
 
-// Function to create a new todo item
 export function createTodoItem(task) {
   const todoItem = document.createElement('li');
   todoItem.classList.add('todo-item');
@@ -103,47 +89,47 @@ export function createTodoItem(task) {
     deleteTask(todoItem);
   });
   checkbox.addEventListener('change', () => {
-    task.completed = checkbox.checked;
-    if (task.completed) {
+    const index = parseInt(todoItem.getAttribute('data-index'));
+    updateStatus(index, checkbox.checked);
+    if (checkbox.checked) {
       taskElement.classList.add('completed');
     } else {
       taskElement.classList.remove('completed');
     }
-    saveTasksToLocalStorage(); // Save updated tasks to local storage when checkbox is toggled
+    saveItemsToLocalStorage();
   });
   return todoItem;
 }
 
-// Function to render the todo list
 export function renderTodoList() {
   const todoList = document.getElementById('todo-list');
   todoList.innerHTML = '';
 
-  // Sort tasks by index value before rendering
-  tasks.sort((a, b) => a.index - b.index);
+  items.sort((a, b) => a.index - b.index);
 
-  tasks.forEach((task) => {
+  items.forEach((task) => {
     const todoItem = createTodoItem(task);
     todoList.appendChild(todoItem);
   });
 }
 
-// Function to add a new task to the todo list
 export function addTodoItem(taskText) {
   const newTask = {
     description: taskText,
     completed: false,
-    index: tasks.length + 1,
+    index: items.length + 1,
   };
-  tasks.push(newTask);
+  items.push(newTask);
   renderTodoList();
-  saveTasksToLocalStorage(); // Save updated tasks to local storage when a new task is added
+  saveItemsToLocalStorage();
 }
-
-// Function to clear all completed tasks
 export function clearCompletedTasks() {
-  tasks = tasks.filter((task) => !task.completed);
-  updateIndexes(); // Update task indexes after clearing completed tasks
+  const completedTasks = items.filter((task) => !task.completed);
+  items.length = 0; // Clear the array in-place
+  completedTasks.forEach((task) => {
+    items.push(task);
+  });
+  updateIndexes();
   renderTodoList();
-  saveTasksToLocalStorage(); // Save updated tasks to local storage after clearing completed tasks
+  saveItemsToLocalStorage();
 }
