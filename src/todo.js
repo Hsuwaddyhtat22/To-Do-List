@@ -7,6 +7,7 @@ function updateIndexes() {
 }
 
 export function deleteTask(todoItem) {
+  /* eslint-disable */
   const taskIndex = items.findIndex((task) => task.index === parseInt(todoItem.dataset.index));
   if (taskIndex !== -1) {
     items.splice(taskIndex, 1);

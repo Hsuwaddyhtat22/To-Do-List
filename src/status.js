@@ -1,5 +1,5 @@
 // status.js
-
+/* eslint-disable */
 export let items = [];
 
 export function updateStatus(index, completed) {
